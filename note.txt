@@ -1,0 +1,263 @@
+编译器compiler
+编译器把整个源代码文件从头到尾完整扫描，一次性翻译成机器码或目标代码，然后生成一个独立的可执行文件。之后运行时，计算机直接执行这个可执行文件，不再需要编译器参与。
+C就是典型的编译型语言
+
+解释器interpreter
+解释器不生成独立的可执行文件。它从头到尾逐行读取源代码，翻译一行、执行一行。程序运行过程中，解释器始终在场。
+Python就是典型的解释型语言
+
+=================================================
+gcc test.c -o text.exe
+
+可以拆开：
+
+gcc
+│
+└── 使用 GCC
+
+test.c
+│
+└── 输入：C 源代码
+
+-o
+│
+└── output，指定输出文件
+
+test.exe
+│
+└── 输出：可执行文件
+
+-----------------------
+
+gcc怎么把.c变为.exe：
+
+hello.c
+   ↓
+预处理
+   ↓
+编译
+   ↓
+汇编
+   ↓
+链接
+   ↓
+hello.exe
+
+-----------------------
+
+接着Windows执行.exe：
+
+hello.exe
+   ↓windows
+main
+   ↓
+printf()
+   ↓
+Hello,C!
+   ↓
+return 0
+   ↓
+done
+
+-----------------------
+
+函数
+↓
+返回值
+↓
+操作系统
+↓
+进程
+↓
+退出状态
+
+=================================================
+C 被称为静态类型语言（statically typed language）在创建变量的时候需要先声明变量类型（int float double char ...）
+指针 → 内存 → 数组 → 结构体 → 动态内存
+
+Python 通常被称为动态类型语言（dynamically typed language）
+
+=================================================
+
+address（地址）
+
+pointer（指针）
+
+```c
+int age = 20;
+int *ptr;
+ptr = &age;
+```
+              内存
+        ┌──────────────┐
+        │      20                       │
+        └──────────────┘
+                ↑	          ↑
+                │	          │
+               age	          │
+                │	          │
+                │ 地址                │
+                │                        │
+        ┌──────────┐      │
+        │  age 的地址     │      │
+        └──────────┘      │
+                ↑	           │
+               ptr  ─────→  *ptr  
+
+&：从“对象”得到“地址”。
+*：从“地址”访问“对象”。
+
+-------------------
+
+     age		符号 * 有两种作用
+       ↓		
+┌──────┐	1.声明指针
+│     20     │	int *ptr;
+└──────┘	这里 * 是声明语法的一部分，表示ptr是一个指向int的指针
+      ↑		
+      │ int *	2.使用指针
+      │		*ptr
+     ptr		这里的 * 是解引用运算符（dereference operator）
+		表示根据 ptr 保存的地址，访问它所指向的对象
+
+指针的价值在于：让一个地方能够间接访问另一个对象
+
+-------------------
+
+内存地址
+
+1000                 1001               1002               1003
+ ↓                      ↓                     ↓                      ↓
+┌─────────┬─────────┬─────────┬─────────┐
+│                     │                      │                     │                      │
+│                                     age = 20                                          │
+└─────────┴─────────┴─────────┴─────────┘
+ ↑
+ │
+ p	这里 p = 1000
+
+int *p = &age;	告诉C从 p 保存的地址开始，把那里当成一个 int 对象来访问
+char *p = &grade;	把地址 1000 对应的对象作为 char 来访问
+这两个虽然都保存一个地址，但是：它们告诉 C 如何理解这个地址所对应的对象
+
+=================================================
+Pointer Arithmetic
+
+int *p;
+p + 1  则对应位置为1000 + 4
+p         → 1000
+p + 1   → 1004
+p + 2   → 1008
+p + 3   → 1012
+指针类型不仅影响 *p 如何访问对象，也影响指针运算如何移动
+指针运算会按照它所指向的类型的大小进行缩放（scaling）
+Pointer arithmetic is scaled by the size of the pointed-to type
+char *q;
+q + 1 则对应位置为1000 + 1
+
+--------------------
+进入数组
+int numbers[4] = {10, 20, 30, 40};        数组是一组连续存放的、类型相同的对象
+
+地址
+1000             1004             1008             1012
+ ↓                   ↓                   ↓                   ↓
+┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐
+│  10        │  │    20       │  │  30        │  │  40        │
+└──────┘  └──────┘  └──────┘  └──────┘
+ ↑
+ p
+
+numbers[0]  ≈  *(numbers + 0)
+numbers[1]  ≈  *(numbers + 1)
+numbers[2]  ≈  *(numbers + 2)
+numbers[3]  ≈  *(numbers + 3)
+
+=================================================
+define function
+
+```c
+void change(int x)
+{
+    x = 100;
+}
+int main(void)
+{
+    int age = 20;
+    change(age);
+    printf("%d\n", age);
+    return 0;
+}
+```
+普通参数：void change(int x) 传进去的是”值“（pass by value）
+所以函数修改：x = 100;
+不会修改 main 里的原变量
+
+重要：
+int *create_number(void);
+定义函数时加上 * 表示输出结果为指针
+=================================================
+loop
+
+循环（loop）
+├── while
+├── for
+├── do ... while
+├── break
+├── continue
+├── 嵌套循环（nested loop）
+└── 常见循环错误
+
+=================================================
+array in function
+
+An array is not a pointer, but in many expressions, an array name is converted to a pointer to its first element.
+
+C uses pass by value, but when an array is passed to a function, the value passed is typically the address of its first element.
+
+=================================================
+pointer management
+
+malloc
+...
+free
+
+p = malloc(5 * sizeof(int)); 
+p = calloc(5, sizeof(int));
+int *temp = realloc(p, 10 * sizeof(int));
+
+Python 有自己的：
+garbage collection / memory management机制，会自动处理对象生命周期(lifetime)的一部分
+
+pointer 有：
+1.typed pointer(int double float...)
+2.generic object pointer(void *)
+
+
+
+dangling pointer
+memory leak
+double free(UB)重复释放	alias
+ownership	owner / borrower
+resource management
+
+
+Memory Leak→ 忘了释放
+Use-After-Free→ 释放太早 / 释放之后又使用
+Double Free→ 释放了两次
+=================================================
+pointer to pointer
+int **pp = &p
+why is here two "*" ? Because ** means pp has to dereference twice to reach the original value(the int)
+
+输出参数就是：调用者把一个可以写入结果的位置交给函数，让函数把计算结果写回去。
+An output parameter allows a function to send a result back to the caller through a parameter.
+
+=================================================
+
+函数接口（function interface）：调用者如何使用函数，以及函数会返回什么。
+接口契约（interface contract）：函数对输入、返回值、失败行为和资源责任所作的约定。
+
+状态码（status code） 是用于表示执行结果的值；枚举（enumeration，enum） 可以给一组相关的整数状态起上有意义的名字。
+
+
